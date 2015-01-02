@@ -4,9 +4,9 @@
 
 channel=`cat gsm_channel 2>/dev/null`
 if [ -z "$channel" ]; then
-  channel=`kal -s GSM900 | sort -n -r -k 7 | awk '{print $2}' | head -n 1`
+  channel=`kal -s GSM900 $@ | sort -n -r -k 7 | awk '{print $2}' | head -n 1`
   echo $channel > gsm_channel
 fi
 
-ppm_error=`kal -c $channel | grep "average absolute error" | awk '{print $4}'`
+ppm_error=`kal -c $channel $@ | grep "average absolute error" | awk '{print $4}'`
 echo $ppm_error > ppm_error
