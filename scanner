@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# A radio scanner implemented using rtl-sdr, creates an ogg stream that
+# is streamed to an icecast server with ezstream
+
+# Dependencies: rtl_fm (+zero_squelch patch), sox, ezstream
+
+# File locations
+base="."
+rtl_fm_opts_path="$base/rtl_fm.opts"
+ppm_err_path="$base/ppm_error"
+sox_opts_path="$base/sox.opts"
+ezstream_path="$base/ezstream.xml"
+
+# Populate options
+rtl_fm_opts=`cat $rtl_fm_opts_path 2>/dev/null | tr '\n' ' '`
+ppm_err=`cat $ppm_err_path 2>/dev/null`
+sox_opts=`cat $sox_opts_path 2>/dev/null | tr '\n' ' '`
+
+if [ ! -f "$rtl_fm_opts_path" ]; then
+  echo "Copy ${rtl_fm_opts_path}-dist to $rtl_fm_opts_path"
+  exit 1
+fi
+
+if [ ! -f "$sox_opts_path" ]; then
+  echo "Copy ${sox_opts_path}-dist to $sox_opts_path"
+  exit 1
+fi
+
+if [ ! -f "$ezstream_path" ]; then
+  echo "Copy ${ezstream_path}-dist to $ezstream_path"
+  exit 1
+fi
+
+if [ -z "$ppm_err" ]; then
+  echo "* Run kalibrate to calculate ppm_error for rtl_fm"
+  ppm_err=0
+fi
+
+# rtl_fm doesn't always cleanly die...
+killall -9 rtl_fm 2>/dev/null
+
+# start!
+while true; do
+  rtl_fm -p $ppm_err $rtl_fm_opts | \
+   sox $sox_opts | \
+   ezstream -c $ezstream_path
+sleep 1
+done

@@ -1,0 +1,14 @@
+-r 12k
+-t raw
+-e signed
+-b 16
+-c 1
+-V1
+-
+-r 12k
+-t ogg
+-
+sinc 0.4k-3.5k
+vol 3.0
+lowpass 3.5k
+highpass 0.4k

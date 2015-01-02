@@ -1,0 +1,13 @@
+index 0f7ac38..eafbc95 100644
+--- a/src/rtl_fm.c
++++ b/src/rtl_fm.c
+@@ -825,7 +825,8 @@ static void *demod_thread_fn(void *arg)
+                if (d->squelch_level && d->squelch_hits > d->conseq_squelch) {
+                        d->squelch_hits = d->conseq_squelch + 1;  /* hair trigge
+                        safe_cond_signal(&controller.hop, &controller.hop_m);
+-                       continue;
++                       //continue; instead of skiping write we overwrite zeros
++                       memset ( d->result, 0, 2*d->result_len);
+                }
+                pthread_rwlock_wrlock(&o->rw);
+                memcpy(o->result, d->result, 2*d->result_len);
